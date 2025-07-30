@@ -1,5 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE TABLE IF NOT EXISTS Branches (
+CREATE TABLE Branches (
     branch_id UUID PRIMARY KEY DEFAULT UUID_generate_v4(),
     branch_name TEXT NOT NULL,
     created_at DATE NOT NULL DEFAULT CURRENT_DATE
