@@ -8,4 +8,9 @@ def remove_credit_card_number(data):
                 del data[key]
 
         else:
-            
+             remove_credit_card_number(data[key])
+    elif isinstance(data, list):
+        # Iterate over the list and call the function for each item
+        for item in data:
+            remove_credit_card_number(item)
+    return data
