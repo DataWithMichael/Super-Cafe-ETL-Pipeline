@@ -1,3 +1,4 @@
+time, branch, name, order, price, payment, credit-card-number
 9/5/2023 9:00,Leeds,Jerome Soper,"Regular Iced americano - 2.15, Large Hot Chocolate - 1.70, Regular Iced americano - 2.15, Large Filter coffee - 1.80",7.8,CARD,7.92528E+15
 9/5/2023 9:01,Leeds,Ronald Moss,"Large Chai latte - 2.60, Regular Hot Chocolate - 1.40",4,CASH,
 9/5/2023 9:03,Leeds,Joseph Mccabe,"Regular Chai latte - 2.30, Regular Filter coffee - 1.50, Large Chai latte - 2.60",6.4,CARD,6.84061E+15
