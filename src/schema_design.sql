@@ -37,4 +37,3 @@ CREATE TABLE IF NOT EXISTS Order_Items(
     FOREIGN KEY (order_id) REFERENCES Orders(order_id),
     FOREIGN KEY (product_id) REFERENCES Products(product_id)
 );
-
