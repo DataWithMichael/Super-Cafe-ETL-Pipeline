@@ -3,7 +3,7 @@ from pathlib import Path
 
 # system in which you can decide which branch you want to get the data from
 
-def get_data(num): 
+def get_data(num): # choose what branch to extract the data from
     branch_1 = Path("..") / "data" / "chesterfield_25-08-2021_09-00-00(in).csv"
     branch_2 = Path("..") / "data" / "leeds_09-05-2023_09-00-00_done(in).csv"
     branch_3 = Path("..") / "data" / "uppingham_08-08-2023_09-00-00(in).csv"
@@ -22,11 +22,17 @@ def get_data(num):
             reader = csv.DictReader(file)
             for data in reader:
                 branch_data.append(data)
-            return branch_data
+            return branch_data # returns a list of dicts
 
+
+    # err handling
     except FileNotFoundError as whoops:
         print(f"File not found: {whoops}")
         return []
     except Exception as whoops:
         print(f"An error occurred: {whoops}")
         return []
+
+
+
+# add option to run all branches together - for future automation
