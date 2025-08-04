@@ -1,13 +1,6 @@
-import file_handling
+import Source.file_handling as file_handling
+import Source.transformation as transformation
 
-branches = ["Chesterfield", "Leeds", "Uppingham"]
+new = input("Do you want to extract and clean the data?: ")
 
-print("Which branch do you want to access? \n")
-
-for branch in branches:
-    print(branch)
-
-num = int(input("\nMake your selection now: "))
-
-print(file_handling.get_data(num))
-
+transformation.transform()
