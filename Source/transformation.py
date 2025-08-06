@@ -8,9 +8,9 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 #files to process: (input_filename, output_filename)
 csv_files = [
-    ("..\\data\\chesterfield_25-08-2021_09-00-00(in).csv", "..\\clean_data\\cleaned_chesterfield_data.csv"),
-    ("..\\data\\leeds_09-05-2023_09-00-00(in).csv", "..\\clean_data\\cleaned_leeds_data.csv"),
-    ("..\\data\\uppingham_08-08-2023_09-00-00(in).csv", "..\\clean_data\\cleaned_uppingham_data.csv"),
+    ("..\\data\\chesterfield_25-08-2021_09-00-00(in).csv", "..\\clean_data\\chesterfield\\chesterfield_orders.csv", "..\\clean_data\\chesterfield\\chesterfield_products.csv"),
+    ("..\\data\\leeds_09-05-2023_09-00-00(in).csv", "..\\clean_data\\leeds\\leeds_orders.csv", "..\\clean_data\\leeds\\leeds_products.csv"),
+    ("..\\data\\uppingham_08-08-2023_09-00-00(in).csv", "..\\clean_data\\uppingham\\uppingham_orders.csv", "..\\clean_data\\uppingham\\uppingham_products.csv"),
 ]
 
 #columns to remove from all files
@@ -24,62 +24,81 @@ def remove_columns(data, columns_to_remove):
             row.pop(col, None) #remove key if exists safely
     return data
 
+# transform (split orders into products + split products into names and prices)
+def transform_to_tables(cleaned_data: List[Dict[str, str]]): # Split cleaned data into separate orders and products tables
 
-# transform orders    
-def split_orders(data:List[Dict[str,str]]):
+    orders_data = []
+    products_data = []
+    order_id = 1
     
-    if data is not None:    # error handling
-        for order in data: # order is the individual orders  =  (dict{name: Michael, orders: chocolate})
-
-            purchase_string = order["orders"] # get the value of the orders key, store value inside string
-            items_list = purchase_string.split(", ") # use .split function to split the string into substrings
-            return items_list # pass variable into new function
-
-def split_name_and_price(items_list): # function to strip the price from the name + falvour
-
-    # Initialize empty lists to store separated data
-    prod_names = []
-    price_each = []
-
-    # Process each individual product string in the list
-    for individual_product in items_list:
-        
-        product = individual_product.rsplit(" - ", 1) # splits the products list from the last `-`
-        # (1) argument is used to split it at right most element of (-)
-
-        prod_names.append(product[0])
-        price_each.append(product[1])
-
-    return prod_names, price_each
-
-def join_data(cleaned_data:List[Dict[str,str]], prod_names, prices):
-
     for order in cleaned_data:
-        for name in prod_names:
-            order.update({"prod_name": name})
-        for price in prices:
-            order.update({"price": price})
-
-    return cleaned_data  
+        # Create order record (one per original order)
+        order_record = {
+            "order_id": order_id,
+            "date": order["date"],
+            "branch_name": order["branch_name"],
+            "total_price": order["total_price"]
+        }
+        orders_data.append(order_record)
+        
+        # Create product records (multiple products per order if needed)
+        items_list = order["orders"].split(", ") # splits orders into products
+        for item in items_list:
+            product_name, price = item.rsplit(" - ", 1) # splits names and prices of products
+            product_record = {
+                "order_id": order_id,
+                "prod_name": product_name,
+                "price": price
+            }
+            products_data.append(product_record)
+        
+        order_id += 1
+    
+    return orders_data, products_data
+    orders_data = []
+    products_data = []
+    order_id = 1 
+    
+    for order in cleaned_data:
+        # Order table record
+        order_record = {
+            "order_id": order_id, # placeholder for GUID
+            "date": order["date"],
+            "branch_name": order["branch_name"],
+            "total_price": order["total_price"]
+        }
+        orders_data.append(order_record)
+        
+        # Product table records
+        items_list = order["orders"].split(", ")
+        for item in items_list:
+            product_name, price = item.rsplit(" - ", 1)
+            product_record = {
+                "order_id": order_id,  # placeholder for generating_GUID
+                "prod_name": product_name,
+                "price": price
+            }
+            products_data.append(product_record)
+        
+        order_id += 1
+    
+    return orders_data, products_data
 
 # write to clean_data_csv
-def write_csv(file_path, data):    
+def write_csv(file_path, data:List[Dict[str,str]]):    
  # writes a list of dictionaries to a csv file. 
-    if not data:
-        print("No data to write.")
-        return
+ 
     with open(file_path, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.DictWriter(file, fieldnames=data[0].keys())
         writer.writeheader()
         writer.writerows(data)
 
-
 # main functionality
 def transform_main():
     #loop throught all input/output file pairs
-    for input_filename, output_filename in csv_files:
+    for input_filename, orders_table, products_table in csv_files:
         input_path = os.path.join(base_dir, input_filename) # handles os path formatting
-        output_path = os.path.join(base_dir, output_filename) # if it can't find filename, continues in base dir
+        output_path = os.path.join(base_dir, orders_table) # if it can't find filename, continues in base dir
 
         if not os.path.exists(input_path): # err handling
             print(f"File not found: {input_path}")
@@ -93,14 +112,13 @@ def transform_main():
             cleaned_data = remove_columns(data, columns_to_remove)
             
             # transform orders
-            split_data = split_orders(cleaned_data) 
+            orders_data, products_data = transform_to_tables(cleaned_data)
 
-            prod_names, prices = split_name_and_price(split_data)
+            orders_path = os.path.join(base_dir, orders_table)
+            products_path = os.path.join(base_dir, products_table)
 
-            final_data = join_data(cleaned_data, prod_names, prices)
-
-            # write to clean_data .csv files
-            write_csv(output_path, final_data)
+            write_csv(orders_path, orders_data)
+            write_csv(products_path, products_data)
 
             print(f"Removed columns {columns_to_remove} and saved to '{output_path}'.")
         except Exception as e:
