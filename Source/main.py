@@ -1,4 +1,4 @@
-import transformation
+import core_etl
 import create_table_function
 
 
@@ -10,7 +10,7 @@ if input == "y":
     #create_table_function.create_tables()
 
     # extracts csv_data, transforms, loads into clean_csv
-    transformation.transform_main() 
+    core_etl.transform_main() 
 
     # read_clean_data()
 
