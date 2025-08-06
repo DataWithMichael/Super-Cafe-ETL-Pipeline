@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  DE final Project - Super Cafe S3 Cloudformation for AWS integration with Sales Data and application 
+
+Parameters:
+  YourName:
+    Type: String
+    Description: Enter your name in format 'first-last' to customise the way your resources are named
+    Default: ana-lattex
+
+Resources:
+  Ana-lattex-etl-stack:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${YourName}-shopper-raw-data'
+      PublicAccessBlockConfiguration: # do not allow any public access
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      Tags:
+        - Key: Name
+          Value: !Sub '${YourName}-shopper-raw-data'
+
+  Ana-lattex-etl-stackPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref Ana-lattex-etl-stack
+      PolicyDocument:
+        Statement:
+          - Sid: "AllowSSLRequestsOnly"
+            Action: "s3:*"
+            Principal: "*"
+            Effect: "Deny" # Block if...
+            Resource:
+              - !Sub "arn:aws:s3:::${YourName}-shopper-raw-data"
+              - !Sub "arn:aws:s3:::${YourName}-shopper-raw-data/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false" # ...the request is not HTTPS
