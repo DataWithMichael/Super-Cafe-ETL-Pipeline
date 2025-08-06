@@ -1,6 +1,21 @@
-import Source.file_handling as file_handling
-import Source.transformation as transformation
+import core_etl
+import create_table_function
 
-new = input("Do you want to extract and clean the data?: ")
 
-transformation.transform()
+input = input("Do you want to extract and clean the data?: (y/n) ")
+
+if input == "y":
+
+    # creates tables in database
+    #create_table_function.create_tables()
+
+    # extracts csv_data, transforms, loads into clean_csv
+    core_etl.transform_main() 
+
+    # read_clean_data()
+
+    # load_data_to_db()
+
+else:
+    print("Goodbye")
+    quit()
