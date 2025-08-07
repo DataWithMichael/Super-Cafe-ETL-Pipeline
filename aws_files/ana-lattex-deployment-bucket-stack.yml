@@ -1,18 +1,17 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >
-  DE final Project - Super Cafe S3 Cloudformation for AWS integration with Sales Data and application 
+  MysteryShopper S3 + Lambda Cloudformation example deployment bucket for CF files + Lambda zips
 
 Parameters:
   YourName:
     Type: String
-    Description: Enter your name in format 'first-last' to customise the way your resources are named
-    Default: ana-lattex
+    Description: Enter your name, in format 'first-last', used as the prefix of the S3 bucket name
 
 Resources:
-  Ana-lattex-etl-stack:
+  S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${YourName}-shopper-raw-data'
+      BucketName: !Sub '${YourName}-shopper-deployment-bucket'
       PublicAccessBlockConfiguration: # do not allow any public access
         BlockPublicAcls: True
         BlockPublicPolicy: True
@@ -20,12 +19,12 @@ Resources:
         RestrictPublicBuckets: True
       Tags:
         - Key: Name
-          Value: !Sub '${YourName}-shopper-raw-data'
+          Value: !Sub '${YourName}-shopper-deployment-bucket'
 
-  Ana-lattex-etl-stackPolicy:
+  S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref Ana-lattex-etl-stack
+      Bucket: !Ref S3Bucket
       PolicyDocument:
         Statement:
           - Sid: "AllowSSLRequestsOnly"
@@ -33,8 +32,8 @@ Resources:
             Principal: "*"
             Effect: "Deny" # Block if...
             Resource:
-              - !Sub "arn:aws:s3:::${YourName}-shopper-raw-data"
-              - !Sub "arn:aws:s3:::${YourName}-shopper-raw-data/*"
+              - !Sub "arn:aws:s3:::${YourName}-shopper-deployment-bucket"
+              - !Sub "arn:aws:s3:::${YourName}-shopper-deployment-bucket/*"
             Condition:
               Bool:
                 aws:SecureTransport: "false" # ...the request is not HTTPS

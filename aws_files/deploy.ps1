@@ -31,7 +31,7 @@ if (-not $SKIP_PIP_INSTALL) {
     Write-Output "Doing pip install..."
     # Install dependencies from requirements-lambda.txt into src directory with python 3.12
     # On windows may need to use `py` not `python3`
-    python -m pip install `
+    pytho3 -m pip install `
         --platform manylinux2014_x86_64 `
         --target=./src `
         --implementation cp `

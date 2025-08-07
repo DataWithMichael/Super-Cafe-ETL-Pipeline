@@ -1,3 +1,6 @@
+#!/bin/sh
+set -eu
+
 ###
 ### Script to deploy S3 bucket + lambda in cloudformation stack
 ###
@@ -12,13 +15,12 @@ deployment_bucket="${your_name}-shopper-deployment-bucket"
 echo ""
 echo "Doing deployment bucket..."
 echo ""
-aws cloudformation deploy --stack-name "${deployment_bucket}" \
+aws cloudformation deploy --stack-name "${your_name}-shopper-deployment-bucket" \
     --template-file deployment-bucket-stack.yml --region eu-west-1 \
     --capabilities CAPABILITY_IAM --profile ${aws_profile} \
     --parameter-overrides \
       YourName="${your_name}";
 
-# If SKIP_PIP_INSTALL variable is not set or is empty then do a pip install
 if [ -z "${SKIP_PIP_INSTALL:-}" ]; then
     echo ""
     echo "Doing pip install..."
