@@ -25,8 +25,66 @@ def remove_columns(data, columns_to_remove):
     return data
 
 # transform (split orders into products + split products into names and prices)
-def transform_to_tables(cleaned_data: List[Dict[str, str]]): # Split cleaned data into separate orders and products tables
+# def transform_to_tables(cleaned_data: List[Dict[str, str]]): # Split cleaned data into separate orders and products tables
 
+#     orders_data = []
+#     products_data = []
+#     order_id = 1
+    
+#     for order in cleaned_data:
+#         # Create order record (one per original order)
+#         order_record = {
+#             "order_id": order_id,
+#             "date": order["date"],
+#             "branch_name": order["branch_name"],
+#             "total_price": order["total_price"]
+#         }
+#         orders_data.append(order_record)
+        
+#         # Create product records (multiple products per order if needed)
+#         items_list = order["orders"].split(", ") # splits orders into products
+#         for item in items_list:
+#             product_name, price = item.rsplit(" - ", 1) # splits names and prices of products
+#             product_record = {
+#                 "order_id": order_id,
+#                 "product_name": product_name,
+#                 "price": price
+#             }
+#             products_data.append(product_record)
+        
+#         order_id += 1
+    
+#     return orders_data, products_data
+#     orders_data = []
+#     products_data = []
+#     order_id = 1 
+    
+#     for order in cleaned_data:
+#         # Order table record
+#         order_record = {
+#             "order_id": order_id, # placeholder for GUID
+#             "date": order["date"],
+#             "branch_name": order["branch_name"],
+#             "total_price": order["total_price"]
+#         }
+#         orders_data.append(order_record)
+        
+#         # Product table records
+#         items_list = order["orders"].split(", ")
+#         for item in items_list:
+#             product_name, price = item.rsplit(" - ", 1)
+#             product_record = {
+#                 "order_id": order_id,  # placeholder for generating_GUID
+#                 "product_name": product_name,
+#                 "price": price
+#             }
+#             products_data.append(product_record)
+        
+#         order_id += 1
+    
+#     return orders_data, products_data
+
+def transform_to_tables(cleaned_data: List[Dict[str, str]]):
     orders_data = []
     products_data = []
     order_id = 1
@@ -42,40 +100,12 @@ def transform_to_tables(cleaned_data: List[Dict[str, str]]): # Split cleaned dat
         orders_data.append(order_record)
         
         # Create product records (multiple products per order if needed)
-        items_list = order["orders"].split(", ") # splits orders into products
+        items_list = order["orders"].split(", ")  # splits orders into products
         for item in items_list:
-            product_name, price = item.rsplit(" - ", 1) # splits names and prices of products
+            product_name, price = item.rsplit(" - ", 1)  # splits names and prices of products
             product_record = {
                 "order_id": order_id,
-                "prod_name": product_name,
-                "price": price
-            }
-            products_data.append(product_record)
-        
-        order_id += 1
-    
-    return orders_data, products_data
-    orders_data = []
-    products_data = []
-    order_id = 1 
-    
-    for order in cleaned_data:
-        # Order table record
-        order_record = {
-            "order_id": order_id, # placeholder for GUID
-            "date": order["date"],
-            "branch_name": order["branch_name"],
-            "total_price": order["total_price"]
-        }
-        orders_data.append(order_record)
-        
-        # Product table records
-        items_list = order["orders"].split(", ")
-        for item in items_list:
-            product_name, price = item.rsplit(" - ", 1)
-            product_record = {
-                "order_id": order_id,  # placeholder for generating_GUID
-                "prod_name": product_name,
+                "product_name": product_name,
                 "price": price
             }
             products_data.append(product_record)

@@ -14,16 +14,15 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS products (
             product_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-            product_name TEXT NOT NULL,
-            price_each NUMERIC(10,2) NOT NULL,
-            created_at DATE NOT NULL
+            product_name TEXT NOT NULL UNIQUE,
+            price NUMERIC(10,2) NOT NULL,
+            prd_created_at DATE NOT NULL
         );
         """,
         """
         CREATE TABLE IF NOT EXISTS orders (
             order_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
             branch_id UUID REFERENCES branches(branch_id),
-            product_id UUID REFERENCES products(product_id),
             order_date DATE NOT NULL,
             total_amount NUMERIC(10,2),
             payment_method TEXT
