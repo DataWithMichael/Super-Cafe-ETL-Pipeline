@@ -5,7 +5,6 @@ from pathlib import Path
 # ✅ Import working insert functions
 from insert_function import (
     insert_branches,
-    insert_customers,
     insert_products,
     insert_orders,
     insert_order_items
@@ -42,14 +41,12 @@ def load_all_data(clean_data):
         try:
             # Get or insert IDs for FK relations
             branch_id = insert_branches(row['branch_name'])
-            customer_id = insert_customers(row['customer_name'])
             product_id = insert_products(row['product_name'], float(row['price_each']))
             
             # Insert order
             order_id = str(uuid.uuid4())
             order_data = {
                 'order_id': order_id,
-                'customer_id': customer_id,
                 'branch_id': branch_id,
                 'product_id': product_id,
                 'order_date': row['order_date'],
