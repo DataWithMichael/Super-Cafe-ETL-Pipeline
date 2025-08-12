@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Deployment bucket to store Lambda code and CloudFormation packages
+
+Parameters:
+  YourName:
+    Type: String
+    Description: Prefix for bucket name
+
+Resources:
+  DeploymentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${YourName}-shopper-deployment-bucket-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${YourName}-shopper-deployment-bucket-${AWS::AccountId}'
+
