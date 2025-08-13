@@ -11,7 +11,7 @@ Resources:
   DeploymentBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${YourName}-shopper-deployment-bucket-${AWS::AccountId}'
+      BucketName: !Sub '${YourName}-deployment-bucket'
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -19,5 +19,21 @@ Resources:
         RestrictPublicBuckets: true
       Tags:
         - Key: Name
-          Value: !Sub '${YourName}-shopper-deployment-bucket-${AWS::AccountId}'
+          Value: !Sub '${YourName}-deployment-bucket'
 
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref DeploymentBucket
+      PolicyDocument:
+        Statement:
+          - Sid: "AllowSSLRequestsOnly"
+            Action: "s3:*"
+            Principal: "*"
+            Effect: "Deny"
+            Resource:
+              - !Sub "arn:aws:s3:::${YourName}-deployment-bucket"
+              - !Sub "arn:aws:s3:::${YourName}-deployment-bucket/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"

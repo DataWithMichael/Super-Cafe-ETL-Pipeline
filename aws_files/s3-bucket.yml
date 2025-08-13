@@ -12,7 +12,7 @@ Resources:
   RawDataBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub '${TeamName}-etl-raw-data-bucket'
+      BucketName: !Sub '${TeamName}-etl-pipeline'
       PublicAccessBlockConfiguration:
         BlockPublicAcls: True
         BlockPublicPolicy: True
@@ -24,7 +24,7 @@ Resources:
               SSEAlgorithm: AES256
       Tags:
         - Key: Name
-          Value: !Sub '${TeamName}-etl-raw-data-bucket'
+          Value: !Sub '${TeamName}-etl-pipeline'
         - Key: Project
           Value: ETL
 
@@ -39,8 +39,8 @@ Resources:
             Principal: "*"
             Effect: "Deny"
             Resource:
-              - !Sub "arn:aws:s3:::${TeamName}-etl-raw-data-bucket"
-              - !Sub "arn:aws:s3:::${TeamName}-etl-raw-data-bucket/*"
+              - !Sub "arn:aws:s3:::${TeamName}-etl-pipeline"
+              - !Sub "arn:aws:s3:::${TeamName}-etl-pipeline/*"
             Condition:
               Bool:
                 aws:SecureTransport: "false"

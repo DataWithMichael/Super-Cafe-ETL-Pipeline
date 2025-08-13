@@ -8,7 +8,8 @@ fi
 
 aws_profile="$1"
 your_name="$2"
-deployment_bucket="${your_name}-shopper-deployment-bucket"
+
+deployment_bucket="${your_name}-deployment-bucket"
 
 echo ""
 echo "Deploying deployment bucket stack..."
@@ -23,13 +24,12 @@ aws cloudformation deploy \
 echo ""
 echo "Deploying raw data bucket stack..."
 aws cloudformation deploy \
-  --stack-name "${your_name}-shopper-raw-data-bucket" \
+  --stack-name "${your_name}-etl-pipeline" \
   --template-file s3-bucket.yml \
   --region eu-west-1 \
   --capabilities CAPABILITY_NAMED_IAM \
   --profile "${aws_profile}" \
-  --parameter-overrides YourName="${your_name}"
+  --parameter-overrides TeamName="${your_name}"
 
 echo ""
 echo "Deployment complete!"
-
