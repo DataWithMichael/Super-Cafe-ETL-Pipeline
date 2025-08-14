@@ -6,6 +6,7 @@ Parameters:
   YourName:
     Type: String
     Description: Prefix for bucket name
+    Default: ana-lattex
 
 Resources:
   DeploymentBucket:

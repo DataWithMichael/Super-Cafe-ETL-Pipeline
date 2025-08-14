@@ -3,6 +3,7 @@ import datetime
 import psycopg2
 from psycopg2.extras import execute_batch
 from contextlib import contextmanager
+import file_handling
 
 
 @contextmanager
@@ -126,7 +127,7 @@ def insert_order_items(example_order_items):
 if __name__ == "__main__":
     print("Select branch number:")
     branch_num = int(input("1 for Chesterfield, 2 for Leeds, 3 for Uppingham: "))
-    data = get_data(branch_num)
+    data = file_handling.get_data(branch_num)
 
     example_branches = [
         {"branch_id": str(uuid.uuid4()), "name": "Chesterfield"},

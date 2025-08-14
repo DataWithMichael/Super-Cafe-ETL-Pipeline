@@ -5,7 +5,10 @@ from pathlib import Path
 
 def get_data(): # extract data from ALL csv files at once
     branch_data = []
-    dir_path = 'C:\\Users\\micha\\OneDrive\\Documents\\GenerationDE\\ana-lattex-de-x6-generation\\data' # where all csv files are stored
+
+    current_dir = Path(__file__).parent
+    # up one level to project root, then into data folder
+    dir_path = current_dir.parent / "data"
     
     for filename in os.listdir(dir_path): # gets the filenames in dir
         full_path = os.path.join(dir_path, filename)  # Create full path
