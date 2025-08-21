@@ -1,33 +1,32 @@
 ```mermaid
 erDiagram
-    orders {
-        string order_id
-        datetime order_date
-        string branch_id
-        string payment_method
+    BRANCHES {
+        UUID branch_id PK
+        TEXT branch_name
     }
 
-    order_items {
-        string item_id
-        string order_id
-        string product_id
-        int quantity
-        float price
+    PRODUCTS {
+        UUID product_id PK
+        TEXT product_name
+        NUMERIC price
     }
 
-    products {
-        string product_id
-        string product_name
-        string price
-        string prd_created_at
+    ORDERS {
+        UUID order_id PK
+        UUID branch_id FK
+        TIMESTAMP order_date
+        TEXT payment_method
+        NUMERIC total_price
     }
 
-    branches {
-        string branch_id
-        string branch_name
+    ORDER_ITEMS {
+        UUID order_item_id PK
+        UUID order_id FK
+        UUID product_id FK
+        INT quantity
+        NUMERIC price
     }
 
-    orders ||--o{ order_items : has
-    order_items }o--|| products : contains
-    orders }o--|| branches : from
-mian
+    BRANCHES ||--o{ ORDERS : has
+    ORDERS ||--o{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : includes
