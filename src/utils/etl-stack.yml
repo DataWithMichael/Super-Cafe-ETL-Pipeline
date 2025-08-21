@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  ETL Lambda stack: Lambda triggered by S3 uploads, logs "hello team"
+
+Parameters:
+  YourName:
+    Type: String
+    Description: Prefix for resource names
+
+Resources:
+  EtlLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${YourName}-etl-lambda'
+      Runtime: python3.9
+      Handler: lambda_function.lambda_handler
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/lambda-execution-role'
+      Timeout: 30
+      Code: ./src
+      Tags:
+        - Key: Name
+          Value: !Sub '${YourName}-etl-lambda'
+
+  RawDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${YourName}-etl-raw-data'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt EtlLambdaFunction.Arn
+      Tags:
+        - Key: Name
+          Value: !Sub '${YourName}-etl-raw-data'
+
+  RawDataBucketPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref EtlLambdaFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub 'arn:aws:s3:::${YourName}-etl-raw-data'
