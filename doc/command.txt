@@ -1,0 +1,1 @@
+1) To run test_connection file give command: PYTHONPATH=. pytest test/test_connections.py -v  
