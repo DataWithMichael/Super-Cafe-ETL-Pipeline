@@ -42,28 +42,21 @@ This ETL pipeline automates the ingestion, transformation, and storage of daily 
 
 ## Repository Contents
 
-```project-root/
-│
-├── data/ # sample CSVs for local testing
-├── src/ # ETL core logic
-│ ├── etl.py # Extract, Transform, Load helpers
-│ ├── aws_lambda.py # AWS Lambda wrapper for S3 triggers
-│ ├── local_runner.py # Local pipeline runner
-│ └── utils/
-│ ├── db_utils.py # Database helper functions
-│ └── sql_utils.py # DDL helpers for table creation
-├── local/ # Docker and local testing
-│ ├── docker-compose.yml
-│ ├── init.sql
-│ └── app.py # Local run entrypoint
-├── aws/ # AWS deployment scripts
-│ ├── cloudformation.yml
-│ └── lambda_function.py
-├── grafana/ # Dashboard JSON exports
-│ └── dashboards.json
-├── deploy.sh / deploy.ps1 # Deployment scripts
-├── requirements.txt
-└── README.md # Documentation```
+```.
+├── AWS/                  # AWS deployment scripts
+├── Database/             # Database schema and scripts
+├── Sample Data 2/        # Sample CSV files
+├── data/                 # Raw CSV files
+├── doc/                  # Documentation
+├── etl/                  # ETL pipeline code
+├── src/                  # Source code
+├── test/                 # Unit tests
+├── .Ana-lattex_Logo.png  # Team logo
+├── .env                  # Environment variables
+├── .gitignore            # Git ignore rules
+├── README.md             # Project documentation        # Team logo in PDF
+└── ana-lattex.md         # Additional documentation
+```
 
 
 ---
