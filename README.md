@@ -2,6 +2,93 @@
   <img src="Ana-lattex_Logo.png" alt="Ana-LatteX Logo" width="400" height="400"/>
 </p>
 
+# Super Café ETL Pipeline
+
+**This repository is for the Super Café Project by Ana-LatteX**  
+*Ana-LatteX — Automated ETL & BI*
+
+---
+
+## Summary
+Fully automated ETL pipeline (local & AWS): ingest daily branch CSVs, clean and normalize transaction and order data, load into PostgreSQL (local) or Redshift (AWS). Visualize trends and insights with Grafana dashboards for branch and product performance.
+
+---
+
+## Table of Contents
+1. [Overview of the Project](#overview-of-the-project)  
+2. [Repository Contents](#repository-contents)  
+3. [Simplified Explanation for Stakeholders](#simplified-explanation-for-stakeholders)  
+4. [System Architecture & Data Flow](#system-architecture--data-flow)  
+5. [Pipeline Workflow](#pipeline-workflow)  
+6. [Getting Started for Developers](#getting-started-for-developers)  
+7. [Deployment Instructions](#deployment-instructions)  
+8. [Configuration and Secrets Management](#configuration-and-secrets-management)  
+9. [Monitoring & Analytics](#monitoring--analytics)  
+10. [Testing & Quality Checks](#testing--quality-checks)  
+11. [Future Improvements](#future-improvements)  
+12. [Team Contacts](#team-contacts)  
+
+---
+
+## Overview of the Project
+This ETL pipeline automates the ingestion, transformation, and storage of daily transaction data from multiple café branches. Key benefits:
+
+- Centralized storage of branch transactions  
+- Standardized data format for analytics  
+- Real-time business insights via Grafana  
+- Scalable architecture supporting AWS deployment and local testing  
+
+---
+
+## Repository Contents
+
+```project-root/
+│
+├── data/ # sample CSVs for local testing
+├── src/ # ETL core logic
+│ ├── etl.py # Extract, Transform, Load helpers
+│ ├── aws_lambda.py # AWS Lambda wrapper for S3 triggers
+│ ├── local_runner.py # Local pipeline runner
+│ └── utils/
+│ ├── db_utils.py # Database helper functions
+│ └── sql_utils.py # DDL helpers for table creation
+├── local/ # Docker and local testing
+│ ├── docker-compose.yml
+│ ├── init.sql
+│ └── app.py # Local run entrypoint
+├── aws/ # AWS deployment scripts
+│ ├── cloudformation.yml
+│ └── lambda_function.py
+├── grafana/ # Dashboard JSON exports
+│ └── dashboards.json
+├── deploy.sh / deploy.ps1 # Deployment scripts
+├── requirements.txt
+└── README.md # Documentation```
+
+
+---
+
+## Simplified Explanation for Stakeholders
+- Each branch produces a daily CSV file.  
+- Current reporting is manual and per-branch.  
+- The Ana-LatteX ETL pipeline automates ingestion and loading into a central database.  
+- Grafana dashboards provide branch- and product-level analytics, enabling faster decision-making.  
+
+**High-level vision:**  
+`Daily CSV → Automated ETL → Central Database → Grafana BI Dashboards`
+
+---
+
+## System Architecture & Data Flow
+
+**ETL Flow Overview:**
+
+
+
+
+
+
+
 
 
 # ana-lattex-de-x6-generation
