@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="Ana-lattex_Logo.png" alt="Ana-LatteX Logo" width="400" height="400"/>
+</p>
+
+
+
 # ana-lattex-de-x6-generation
 
 Project background: 
