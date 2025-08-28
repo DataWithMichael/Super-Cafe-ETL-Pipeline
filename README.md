@@ -80,10 +80,6 @@ This ETL pipeline automates the ingestion, transformation, and storage of daily 
 
 
 
-
-
-
-
 # ana-lattex-de-x6-generation
 
 Project background: 
@@ -107,13 +103,49 @@ New set up -
 * Data Analytics software will be used to create Business Intelligence analytics for the client.
 * Application monitoring software used to produce operational metrics (i.e. system errors, up-time, etc).
 
-how to run the app 
+how to run the app:
+locally -
 
-Exiting the app
+How to run the Super Cafe app (file based) Prerequisites - Python 3 this can be downloaded from https://www.python.org/
 
-Data persistence
+Download the project: If using Git clone the repository by using the code below;
 
-How to run any unit tests 
+git Clone (https://github.com/DE-X6-LM/ana-lattex-de-x6-generation.git)
+
+If downloaded as a .zip file, extract this and navigate to the ana-lattex-de-x6-generation directory.
+
+It is recommended to create a virtual envirnoment to help manage project dependencies
+
+To create a virtual envirnoment:
+
+python -m venv venv
+
+Then activate this: Windows: .\venv\Scripts\activate or .\venv\Scripts\activate.ps1
+
+MacOS/Linux: source venv/bin/activate
+
+Once active your command prompt will now show (venv) at the beginning.
+
+local (PostgresSQL) database -
+
+pip install will not be needed for exteral libraries, however this would be useful for when using a database and scalability.
+
+Running the application:
+
+Ensure virtual envirnoment is active
+Navigate to root directory of Super Cafe app:
+cd ana-lattex-de-x6-generation
+
+Run main app file:
+main.py
+
+This will show the main menu and you can use the on screen prompt to navigate the menus and manage food items, orders and couriers.
+
+Data persistence:
+All changes made in the apps menus will be automatically saved to the CSV files in the data directory. Dependant on the connection chosen, this is also handled by the local Postgres database and the AWS Redshift cloud database as it will allow for larger volumes of data to be saved without affecting the app.
+
+How to run any unit tests:
+
 
 
 Week 1 Sprint:
