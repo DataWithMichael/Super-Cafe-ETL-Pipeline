@@ -54,7 +54,7 @@ This ETL pipeline automates the ingestion, transformation, and storage of daily 
 ├── .Ana-lattex_Logo.png  # Team logo
 ├── .env                  # Environment variables
 ├── .gitignore            # Git ignore rules
-├── README.md             # Project documentation        # Team logo in PDF
+├── README.md             # Project documentation        
 └── ana-lattex.md         # Additional documentation
 ```
 
@@ -71,7 +71,10 @@ This ETL pipeline automates the ingestion, transformation, and storage of daily 
 `Daily CSV → Automated ETL → Central Database → Grafana BI Dashboards`
 
 
-## ETL Flow Overview
+## System Architecture & Data Flow
+
+**ETL Flow Overview:**
+
 
 | Local ETL Diagram | AWS ETL Diagram |
 |-----------------|-----------------|
@@ -79,15 +82,107 @@ This ETL pipeline automates the ingestion, transformation, and storage of daily 
 
 **Diagram Descriptions:**
 
-- **AWS ETL Diagram:** Shows the data flow from branch CSVs → S3 Raw Bucket → Lambda ETL → Cleaned Data in S3 → Grafana dashboards for analytics.
 - **Local ETL Diagram:** Shows the local pipeline where branch CSVs → Transformation Script → PostgreSQL Database → Local analytics/reporting.
+- **AWS ETL Diagram:** Shows the data flow from branch CSVs → S3 Raw Bucket → Lambda ETL → Cleaned Data in S3 → Grafana dashboards for analytics.
 
+ 
+**Database Schema:** 
+
+- `branches`  
+  - `branch_id` UUID **PK**  
+  - `branch_name` TEXT **UNIQUE**  
+
+- `products`  
+  - `product_id` UUID **PK**  
+  - `product_name` TEXT  
+  - `price` NUMERIC  
+  - **Constraint:** Unique on (`product_name`, `price`)  
+
+- `orders`  
+  - `order_id` UUID **PK**  
+  - `datetime` TIMESTAMP  
+  - `branch_id` UUID **FK → branches(branch_id)**  
+  - `payment_type` TEXT  
+  - `total_price` NUMERIC  
+
+- `order_items`  
+  - `order_item_id` UUID **PK**  
+  - `order_id` UUID **FK → orders(order_id)**  
+  - `product_id` UUID **FK → products(product_id)**  
+  - `quantity` INTEGER (default 1)  
+  - `item_price` NUMERIC (optional: quantity × product price)  
+
+---
+---
+
+## Pipeline Workflow
+
+The Ana-LatteX ETL pipeline supports **two independent workflows**: one for **local testing** and another for **AWS/cloud deployment**.  
+**High-Level ETL Flow (Separate Pipelines):**  
+- **Local:** `Branch CSVs → Local ETL → PostgreSQL → Grafana`  
+- **AWS:** `Branch CSVs → S3 → Lambda ETL → Redshift → Grafana`
 
 ---
 
-## System Architecture & Data Flow
+### **A. Local ETL Pipeline**
+Processes daily branch CSVs on a local machine and loads data into PostgreSQL.  
 
-**ETL Flow Overview:**
+1. **File Detection:**  
+   - Monitor a local folder for new CSV files.  
+
+2. **Data Extraction:**  
+   - Read CSV files using `etl.extract_csv()`.  
+   - Validate structure and remove duplicates or corrupt rows.  
+
+3. **Data Transformation:**  
+   - Use `etl.transform_row()` to split orders and items.  
+   - Generate UUIDs for branches, orders, and products.  
+   - Normalize branch and product fields.  
+   - Assign default `quantity = 1` if missing.  
+
+4. **Database Preparation:**  
+   - Create tables if missing using `sql_utils.create_db_tables()`.  
+   - Ensures unique branches and products, and proper foreign key relationships.  
+
+5. **Data Loading:**  
+   - Insert unique branches (`branches`).  
+   - Upsert unique products (`products`).  
+   - Insert orders (`orders`) and link to branches.  
+   - Insert order items (`order_items`) linked to orders and products.  
+
+6. **Visualization:**  
+   - Grafana dashboards visualize local database insights: sales per branch, top-selling products, daily revenue trends.  
+
+---
+
+### **B. AWS ETL Pipeline**
+Processes daily branch CSVs in the cloud and loads data into S3 and Redshift for analytics.  
+
+1. **File Detection / Trigger:**  
+   - CSV files uploaded to an **S3 raw bucket** trigger **AWS Lambda** functions.  
+
+2. **Data Extraction & Transformation:**  
+   - Lambda extracts CSV data and transforms it using the same rules as local ETL:  
+     - Split orders and items  
+     - Generate UUIDs  
+     - Normalize branch and product data  
+     - Assign default `quantity = 1`  
+
+3. **Data Loading:**  
+   - Store cleaned data in **S3 processed bucket**.  
+   - Load transformed data into **Redshift** for analytics.  
+
+4. **Deployment & Monitoring:**  
+   - **CloudFormation** automates Lambda, S3, and IAM setup.  
+   - **CloudWatch** logs Lambda executions for monitoring and auditing.  
+
+5. **Visualization:**  
+   - Grafana dashboards show real-time insights: sales per branch, top-selling products, daily revenue trends.  
+
+---
+
+
+
 
 
 
