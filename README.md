@@ -70,9 +70,18 @@ This ETL pipeline automates the ingestion, transformation, and storage of daily 
 **High-level vision:**  
 `Daily CSV → Automated ETL → Central Database → Grafana BI Dashboards`
 
-<p align="center">
-  <img src="Local etl pipeline architecture.png" alt="Local etl pipeline architecture" width="400" height="400"/>
-</p>
+
+## ETL Flow Overview
+
+| Local ETL Diagram | AWS ETL Diagram |
+|-----------------|-----------------|
+| <img src="Local etl pipeline architecture.png" width="300px" alt="AWS ETL Diagram"/> | <img src="AWS etl pipeline architecture.png" width="300px" alt="Local ETL Diagram"/> |
+
+**Diagram Descriptions:**
+
+- **AWS ETL Diagram:** Shows the data flow from branch CSVs → S3 Raw Bucket → Lambda ETL → Cleaned Data in S3 → Grafana dashboards for analytics.
+- **Local ETL Diagram:** Shows the local pipeline where branch CSVs → Transformation Script → PostgreSQL Database → Local analytics/reporting.
+
 
 ---
 
