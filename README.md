@@ -70,6 +70,10 @@ This ETL pipeline automates the ingestion, transformation, and storage of daily 
 **High-level vision:**  
 `Daily CSV → Automated ETL → Central Database → Grafana BI Dashboards`
 
+<p align="center">
+  <img src="Local etl pipeline architecture.png" alt="Local etl pipeline architecture" width="400" height="400"/>
+</p>
+
 ---
 
 ## System Architecture & Data Flow
