@@ -181,8 +181,8 @@ Processes daily branch CSVs in the cloud and loads data into S3 and Redshift for
 
 ---
 
+*-*-*-In-depth Project background-*-*-*
 
-In-depth Project background: 
 Our Cafe order application was a success, the client now wants to facilitate their unprecedented growth and expansion to hundreds of outlets.
 The client wants to target new and returning customers to understand which of their products are best sellers.
 
@@ -203,55 +203,55 @@ New set up -
 * Data Analytics software will be used to create Business Intelligence analytics for the client.
 * Application monitoring software used to produce operational metrics (i.e. system errors, up-time, etc).
 
-**Getting started for Developers (or non-techinal users) **
-
-To run Super cafe in its most basic form a file based version of the pipeline may be ran, this will allow for the pipeline, Extract, Load and transform functions to be saved locally, good for non-technical users and for testing file updates. However this will not be great for scalability so for larger data sets databases are reccommened.  
+*-*-Getting started for Developers (or non-techinal users)-*-*
 
 Prerequisites - Python 3 this can be downloaded from https://www.python.org/
 
-** File Based **
+To run Super cafe in its most basic form a file based version of the pipeline may be ran, this will allow for the pipeline, Extract, Load and transform functions to be saved locally, good for non-technical users and for testing file updates. However this will not be great for scalability so for larger data sets databases are reccommened.  
+
+*-*-File Based-*-*
 
 1.Download the project: If using Git clone the repository by using the code below;
 git Clone (https://github.com/DE-X6-LM/ana-lattex-de-x6-generation.git)
 
 2.If downloaded as a .zip file, extract this and navigate to the ana-lattex-de-x6-generation directory.
 
-3.It is recommended to create a virtual envirnoment to help manage project dependencies
-To create a virtual envirnoment:
+3.It is recommended to create a virtual envirnoment to help manage project dependencies.
 
-python -m venv venv
+---To create a virtual envirnoment:
 
-Then activate this: Windows: .\venv\Scripts\activate or .\venv\Scripts\activate.ps1
+'python -m venv venv'
 
-MacOS/Linux: source venv/bin/activate
+Then activate this: Windows: '.\venv\Scripts\activate' or '.\venv\Scripts\activate.ps1'
+
+MacOS/Linux: 'source venv/bin/activate'
 
 Once active your command prompt will now show (venv) at the beginning.
 
 4. a.Ensure virtual envirnoment is active:
+   
    b. Navigate to root directory of Super Cafe app:
 
-cd ana-lattex-de-x6-generation
+                  cd ana-lattex-de-x6-generation
 
    c.Run main app file:
    
-python main.py
+                 python main.py
 
-To run the ETL on a local (PostgresSQL) database, this will allow for larger datasets without a need for subscription to run 
+-*-*To run the ETL on a local (PostgresSQL) database, this will allow for larger datasets that are still locally stored*-*-
 
 Set up using Docker:
+-- Prerequisites - Docker installed on your machine. 
 
-Prerequisites - Docker installed on your machine. 
-Make sure Docker Desktop is running.
-
-
-1. Go to Database subdirectory
-2. Run docker-compose file by either running in the file (push the play button ▶️)
+1.Make sure Docker Desktop is running.
+2. Go to Database subdirectory
+3. Run docker-compose file by either running in the file (push the play button ▶️)
    or
  use the command 'docker-compose up -d' in your terminal to run the script, this will start docker and start Postgres and Adminer containers to run your entire system.
 
 Database credentials (local) are in the env. file, and optionally you can use these in the web browser to access Adminer (http://loaclhost:8081) to inspect the database and tables of data. 
 
-Set up using Cloud based Database (Redshift):
+-*-*-Set up using Cloud based Database (Redshift)-*-*-
 
 
 
