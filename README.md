@@ -180,6 +180,161 @@ Processes daily branch CSVs in the cloud and loads data into S3 and Redshift for
    - Grafana dashboards show real-time insights: sales per branch, top-selling products, daily revenue trends.  
 
 ---
+## Getting Started for Developers 
+
+### **Pre-requisites**
+- **Python 3** – Download from [python.org](https://www.python.org/)
+- For local database setup: **Docker Desktop** installed and running
+
+---
+
+### **A.To run Local ETL pipeline  (Beginner-Friendly)**
+This mode saves data locally in CSV files. It is suitable for non-technical users and quick testing.  
+⚠️ Not recommended for scalability or larger datasets – use a database instead.
+
+1. **Download the project**
+   - Clone via Git:  
+     ```bash
+     git clone https://github.com/DE-X6-LM/ana-lattex-de-x6-generation.git
+     ```
+   - Or download as `.zip`, extract, and navigate into the directory.
+
+2. **Create and activate a virtual environment**  
+   ```bash
+   python -m venv venv
+
+- **Windows (CMD/PowerShell):**  
+  ```bash
+  .\venv\Scripts\activate
+
+- **MacOS/Linux:**
+  ```bash
+  source venv/bin/activate
+  ```
+Once active your command prompt will now show (venv) at the beginning.
+
+3.**Docker setup:**
+- Install & start Docker Desktop.
+- Run Docker Compose:
+  - In VS Code, click ▶️ on the docker-compose.yml file
+  - or run:
+      ```bash
+      docker-compose up -d
+      ```
+  This starts Postgres + Adminer containers.
+- Database credentials: 
+  - Stored in .env file.
+  - Access Adminer at http://localhost:8081
+   (use credentials from .env).
+
+
+4. **Run the application**
+   ```bash
+   python3 auto_etl.py
+   ```
+
+### B. To run AWS cloud ETL pipeline
+
+#### 0. Configure AWS CLI and log in via VS Code terminal
+
+- **Open VS Code terminal** in your project folder.
+
+- **Install AWS CLI** (if not already installed):  
+  - **macOS (using Homebrew):**
+  ```bash
+  brew install awscli
+  ```
+  -**Windows (via MSI installer):**
+  ```bash
+  https://aws.amazon.com/cli/
+   ```
+- **Configure AWS CLI with your credentials:**
+  ```bash
+  aws configure
+  ```
+   - Enter your AWS Access Key ID
+   - Enter your AWS Secret Access Key
+   - Set your default region (e.g., eu-north-1)
+   - Choose default output format (e.g., json)
+
+- **Verify configuration:**
+  ```bash
+  aws sts get-caller-identity
+  ```
+  You should see your AWS account ID and user ARN if configured correctly.
+
+- **(Optional) Use environment variables instead of aws configure:**
+  ```bash
+  export AWS_ACCESS_KEY_ID=<your-access-key>
+  export AWS_SECRET_ACCESS_KEY=<your-secret-key>
+  export AWS_DEFAULT_REGION=<your-region>
+  ```
+   On Windows PowerShell, use $env:AWS_ACCESS_KEY_ID = "<your-access-key>" etc.
+
+
+**1. Deploy the pipeline (if not already deployed):**
+If you have the deployment files included in the repo, you can deploy all AWS services using CloudFormation templates:
+
+ **Deploy S3 buckets:**
+  ```bash
+  aws cloudformation deploy --template-file deployment/s3_buckets.yaml --stack-name supercafe-s3
+  ```
+
+ **Deploy Lambda functions:**
+  ```bash
+  aws cloudformation deploy --template-file deployment/lambda_stack.yaml --stack-name supercafe-lambda
+  ```
+**2.Log in to AWS Management Console:**
+  -Go to [https://aws.amazon.com/console/](https://aws.amazon.com/console/) and log in with your credentials.
+
+**3.Check the S3 Buckets:**
+  - Navigate to the **S3** service.
+  - Open the raw bucket to see uploaded CSV files.
+  -  Open the processed bucket (if applicable) to see transformed files.
+    
+**4.Check the Lambda Function:**
+   - Navigate to the **Lambda** service.
+   - Open the ETL Lambda function.
+   - Review the **Code** and **Configuration**.
+   - You can check **Monitoring → Logs** to see if the Lambda ran successfully.
+     
+**5.Optional – Trigger the Pipeline:** 
+  - You can upload a new CSV file to the raw S3 bucket to trigger the Lambda ETL process.
+  -  Check the processed bucket and Lambda logs to confirm successful execution.
+
+  >Note: Make sure you have access to the AWS account where the pipeline is deployed.
+
+## Configuration and Secrets Management
+
+- **Local environment:** use a `.env` file (do not commit to version control).  
+- **AWS:** store credentials in **SSM Parameter Store** or **Secrets Manager**.
+
+## Monitoring & Analytics
+
+- **Metrics:** `files_processed`, `rows_parsed`, `rows_loaded`, `errors`.  
+- **Logs:** Local logs or **CloudWatch** (AWS).  
+- **Dashboards:** Grafana visualizations of KPIs.
+
+## Testing & Quality Checks
+
+- Unit tests for ETL extraction and transformation functions.  
+- CI should run tests before deployment.  
+- **Common issues:** missing columns, connection issues, malformed CSV rows.
+
+## Future Improvements
+
+- Real-time streaming ingestion (**Kinesis** / **Kafka**).  
+- Advanced BI: customer segmentation, forecasting.  
+- Data lake / Redshift / Snowflake migration.  
+
+## Team Contacts
+
+**Team Ana-LatteX:**  
+- **Developers:** Kimira, Michael, Rahidur, Prajakta  
+- **Product Owners:** Jessica, Cindy
+
+
+
 
 *-*-*-In-depth Project background-*-*-*
 
