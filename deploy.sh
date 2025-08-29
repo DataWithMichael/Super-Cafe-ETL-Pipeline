@@ -1,84 +1,71 @@
 #!/bin/sh
 set -eu
 
-if [ "$#" -lt 2 ]; then
-  echo "Usage: $0 <aws_profile> <team_name> [region]"
-  exit 1
-fi
+###
+### Script to deploy S3 bucket + lambda in cloudformation stack
+###
 
-# Parameters
-aws_profile=$1
-team_name=$2
-region=${3:-eu-west-1}
-deployment_bucket="${team_name}-deployment-bucket"
+#### CONFIGURATION SECTION ####
+aws_profile="$1" # e.g. sot-academy, for the aws credentials
+your_name="$2" # e.g. rory-gilmore (WITH DASHES), for the stack name
+team_name="$3" # e.g. la-vida-mocha (WITH DASHES), for the database name
 
-# Check if deployment bucket exists
+# EC2 config
+ec2_ingress_ip="$4" # e.g. 12.34.56.78 (of your laptop where you are running this)
+
+deployment_bucket="${your_name}-shopper-deployment-bucket"
+ec2_userdata=$(base64 -i userdata)
+#### CONFIGURATION SECTION ####
+
+# Create a deployment bucket stack to hold our zip files of lambdas
 echo ""
-echo "Checking if deployment bucket '$deployment_bucket' exists..."
-if ! aws s3api head-bucket --bucket "$deployment_bucket" --profile "$aws_profile" 2>/dev/null; then
-    echo "Deployment bucket not found. Creating via CloudFormation..."
-    aws cloudformation deploy \
-        --stack-name "$deployment_bucket" \
-        --template-file deployment-bucket-stack.yml \
-        --region "$region" \
-        --capabilities CAPABILITY_IAM \
-        --profile "$aws_profile" \
-        --parameter-overrides \
-            TeamName="$team_name"
-else
-    echo "Deployment bucket already exists. Skipping bucket creation."
-fi
+echo "Doing deployment bucket..."
+echo ""
+aws cloudformation deploy --stack-name "${your_name}-shopper-deployment-bucket" \
+    --template-file deployment-bucket-stack.yml --region eu-west-1 \
+    --capabilities CAPABILITY_IAM --profile ${aws_profile} \
+    --parameter-overrides \
+      YourName="${your_name}";
 
-# Optional pip install for Lambda dependencies
 if [ -z "${SKIP_PIP_INSTALL:-}" ]; then
     echo ""
-    echo "Installing Python dependencies for Lambda..."
-    python3 -m pip install \
-        --platform manylinux2014_x86_64 \
-        --target=./src \
-        --implementation cp \
-        --python-version 3.12 \
-        --only-binary=:all: \
-        --upgrade -r requirements-lambda.txt
+    echo "Doing pip install..."
+    # Install dependencies from requirements-lambda.txt into src directory with python 3.12
+    # On windows may need to use `py` not `python3`
+    python3 -m pip install --platform manylinux2014_x86_64 \
+        --target=./src --implementation cp --python-version 3.12 \
+        --only-binary=:all: --upgrade -r requirements-lambda.txt;
 else
     echo ""
-    echo "Skipping pip install..."
+    echo "Skipping pip install"
 fi
 
-# Encode EC2 userdata
-if [ -f userdata ]; then
-    echo ""
-    echo "Encoding EC2 userdata..."
-    ec2_userdata=$(base64 -w 0 userdata) #-w 0 ensures no line breaks
-else
-    echo ""
-    echo "No userdata file found. Skipping userdata encoding."
-    ec2_userdata=""
-fi
-
-# Package ETL template
+# Create an updated ETL packaged template "etl-stack-packaged.yml" from the default "etl-stack.yml"
+# ...and upload local resources to S3 (e.g zips files of your lambdas)
+# A unique S3 filename is automatically generated each time
 echo ""
-echo "Packaging ETL CloudFormation template..."
-aws cloudformation package \
-    --template-file etl-stack.yml \
-    --s3-bucket $deployment_bucket \
+echo "Doing packaging..."
+echo ""
+aws cloudformation package --template-file etl-stack.yml \
+    --s3-bucket ${deployment_bucket} \
     --output-template-file etl-stack-packaged.yml \
-    --profile $aws_profile \
-    --region $region
+    --profile ${aws_profile};
 
-# Deploy packaged CloudFormation stack
+# Deploy the main ETL stack using the packaged template "etl-stack-packaged.yml"
 echo ""
-echo "Deploying ETL CloudFormation stack..."
-aws cloudformation deploy \
-    --stack-name "${team_name}-store-etl-pipeline" \
-    --template-file etl-stack-packaged.yml \
+echo "Doing etl stack deployment..."
+echo ""
+aws cloudformation deploy --stack-name "${your_name}-shopper-etl-pipeline" \
+    --template-file etl-stack-packaged.yml --region eu-west-1 \
     --capabilities CAPABILITY_IAM \
-    --profile "$aws_profile" \
-    --region "$region" \
+    --capabilities CAPABILITY_NAMED_IAM \
+    --profile ${aws_profile} \
     --parameter-overrides \
-        TeamName="$team_name" \
-        EC2UserData="$ec2_userdata"
+      YourName="${your_name}" \
+      TeamName="${team_name}" \
+      EC2InstanceIngressIp="${ec2_ingress_ip}" \
+      EC2UserData="${ec2_userdata}";
 
 echo ""
-echo "ETL Deployment complete!"
+echo "...all done!"
 echo ""

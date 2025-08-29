@@ -18,18 +18,28 @@ Content-Transfer-Encoding: 7bit
 Content-Disposition: attachment; filename="userdata.txt"
 
 #!/bin/bash
-# Basic EC2 userdata for Ana-Lattex Super Cafe project
-# Updates packages and installs basic utilities
+yum install telnet -y
+yum install docker -y
+service docker start
+usermod -a -G docker ec2-user
+chkconfig docker on
 
-echo "[USERDATA] Starting instance initialization..."
+#!/bin/bash
+echo "[USERDATA] Stopping and removing existing Docker containers"
+docker stop $(docker ps -aq) >/dev/null 2>&1
+docker rm $(docker ps -aq) >/dev/null 2>&1
+echo "[USERDATA] All Docker containers stopped and removed."
 
-# Update all packages
-yum update -y
+echo "[USERDATA] Creating docker volume for grafana"
+su ec2-user -c 'docker volume create grafana-storage ;'
+echo "[USERDATA] Grafana docker volume created"
 
-# Install useful tools
-yum install -y telnet git wget curl
+echo "[USERDATA] Removing grafana swagger page"
+echo '<h1>Swagger disabled</h1>' > /home/ec2-user/no-swagger.html
 
-# Add any other setup commands here if needed
-echo "[USERDATA] EC2 instance setup complete."
-
+echo "[USERDATA] Starting grafana service"
+su ec2-user -c 'docker run -d -p 80:3000 --rm \
+    --volume /home/ec2-user/no-swagger.html:/usr/share/grafana/public/views/swagger.html \
+    --volume grafana-storage:/var/lib/grafana grafana/grafana ;'
+echo "[USERDATA] Grafana service started"
 --//--

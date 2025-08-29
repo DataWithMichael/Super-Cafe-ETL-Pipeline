@@ -1,101 +1,85 @@
-### PowerShell Script to deploy S3 bucket, lambda and ETL stack, and optional EC2 userdata
-### Compatible with local src directory and optional pip install
+###
+### PowerShell Script to deploy S3 bucket + lambda in cloudformation stack
+###
 
-# Exit script on any error
+# Equivalent of set -e command on bash. Exits the script when an error occurs
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
 #### CONFIGURATION SECTION ####
-# Parameters
-$aws_profile=$args[0] # e.g. sot-academy
-$team_name=$args[1]    # e.g. ana-lattex
-$region = if ($args.count -ge 3) { $args[2]} else {"eu-west-1"}
+$aws_profile=$args[0] # e.g. sot-academy, for the aws credentials
+$team_name=$args[1] # e.g. la-vida-mocha (WITH DASHES), for the database name
+
 $deployment_bucket="$team_name-deployment-bucket"
+
+# EC2 config
+$ec2_ingress_ip=$args[2] # e.g. 12.34.56.78 (of your laptop where you are running this)
+
+# PowerShell may need to directly be opened in the handouts folder for this session for this command to work
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ec2_userdata = [System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes("$scriptDir\userdata"))
 #### CONFIGURATION SECTION ####
 
+# Create a deployment bucket stack to hold our zip files of lambdas
 Write-Output ""
-Write-Output "Checking if deployment bucket '$deployment_bucket' exists..."
-
-# Run the command and capture the exit code instead of redirecting in-line
-$bucket_check = aws s3api head-bucket --bucket $deployment_bucket --profile $aws_profile -ErrorAction SilentlyContinue
-
-if (-not $bucket_check) {
-    Write-Output "Deployment bucket not found. Creating via CloudFormation..."
-    aws cloudformation deploy `
-        --stack-name $deployment_bucket `
-        --template-file deployment-bucket-stack.yml `
-        --region $region `
-        --capabilities CAPABILITY_IAM `
-        --profile $aws_profile `
-        --parameter-overrides TeamName=$team_name
-} else {
-    Write-Output "Deployment bucket already exists. Skipping bucket creation."
-}
-
-if (LASTEXITCODE -ne 0) {
-    Write-Output "Deployment bucket not found, creating via CloudFormation..."
-    aws cloudformation deploy `
-        --stack-name $deployment_bucket `
-        --template-file deployment-bucket-stack.yml `
-        --region $region `
-        --capabilities CAPABILITY_IAM `
-        --profile $aws_profile `
-        --parameter-overrides `
-            TeamName="$team_name"
-} else {
-    Write-Output "Deployment bucket already exists. Skipping bucket creation."
-}
-
-# Optional pip install for Lambda dependencies
-if (-not $env:SKIP_PIP_INSTALL) {
+Write-Output "Doing deployment bucket..."
+Write-Output ""
+aws cloudformation deploy `
+    --stack-name $deployment_bucket `
+    --template-file deployment-bucket-stack.yml `
+    --region eu-west-1 `
+    --capabilities CAPABILITY_IAM `
+    --profile $aws_profile `
+    --parameter-overrides `
+      TeamName=$team_name;
+      
+# If SKIP_PIP_INSTALL variable is not set or is empty then do a pip install
+if (-not $SKIP_PIP_INSTALL) {
     Write-Output ""
-    Write-Output "Installing Python dependencies for Lambda..."
-    python -m pip install `
+    Write-Output "Doing pip install..."
+    # Install dependencies from requirements-lambda.txt into src directory with python 3.12
+    # On windows may need to use `py` not `python3`
+    python3 -m pip install `
         --platform manylinux2014_x86_64 `
         --target=./src `
         --implementation cp `
         --python-version 3.12 `
         --only-binary=:all: `
-        --upgrade -r requirements-lambda.txt
-} else {
+        --upgrade -r requirements-lambda.txt;
+}
+else {
     Write-Output ""
     Write-Output "Skipping pip install"
 }
 
-# Encode EC2 userdata
-$ec2_userdata_file ="./userdata" # path to cloud-init userdata script
-if (Test-Path $ec2_userdata_file) {
-    Write-Output "Encoding EC2 userdata..."
-    $ec2_userdata = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((Get-Content $ec2_userdata_file -Raw)))  
-    $ec2_userdata = $ec2_userdata.Trim() # remove stray newlines
-} else {
-    Write-Output "No userdata file found, skipping EC2 UserData..."
-    $ec2_userdata = ""
-}
-
-# Package ETL template
+# Create an updated ETL packaged template "etl-stack-packaged.yml" from the default "etl-stack.yml"
+# ...and upload local resources to S3 (e.g zips files of your lambdas)
+# A unique S3 filename is automatically generated each time
 Write-Output ""
-Write-Output "Packaging ETL CloudFormation template..."
+Write-Output "Doing packaging..."
+Write-Output ""
 aws cloudformation package `
     --template-file etl-stack.yml `
     --s3-bucket $deployment_bucket `
     --output-template-file etl-stack-packaged.yml `
-    --profile $aws_profile `
-    --region $region
-
-# Deploy packaged CloudFormation stack
+    --profile $aws_profile;
+    
+# Deploy template pointing to packaged resources    
 Write-Output ""
-Write-Output "Deploying ETL CloudFormation stack..."
+Write-Output "Doing etl stack deployment..."
+Write-Output ""
+
 aws cloudformation deploy `
-    --stack-name "$team_name-store-etl-pipeline" `
+    --stack-name "$team_name-etl-pipeline" `
     --template-file etl-stack-packaged.yml `
-    --region $region `
+    --region eu-west-1 `
     --capabilities CAPABILITY_IAM `
     --profile $aws_profile `
     --parameter-overrides `
-        TeamName="$team_name" `
-        EC2UserData="$ec2_userdata"
-
+      TeamName=$team_name `
+      EC2InstanceIngressIp=$ec2_ingress_ip `
+      EC2UserData=$ec2_userdata;
+      
 Write-Output ""
-Write-Output "...All Done!"
+Write-Output "...all done!"
 Write-Output ""

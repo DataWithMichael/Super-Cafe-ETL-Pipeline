@@ -1,5 +1,6 @@
 import boto3
 import logging
+from urllib.parse import unquote_plus
 
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
@@ -11,9 +12,11 @@ def get_file_info(event):
     LOGGER.info('get_file_info: starting')
     first_record = event['Records'][0]
     bucket_name = first_record['s3']['bucket']['name']
-    file_name = first_record['s3']['object']['key']
+    file_name_encoded = first_record['s3']['object']['key']
+    
+    file_name = unquote_plus(file_name_encoded)
 
-    LOGGER.info(f'get_file_info: file={file_name}, bucket_name={bucket_name}')
+    LOGGER.info(f'get_file_info: file={file_name} (decoded from {file_name_encoded}), bucket_name={bucket_name}')
     return bucket_name, file_name
 
 
