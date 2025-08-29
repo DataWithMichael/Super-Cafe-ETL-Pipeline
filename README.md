@@ -180,17 +180,164 @@ Processes daily branch CSVs in the cloud and loads data into S3 and Redshift for
    - Grafana dashboards show real-time insights: sales per branch, top-selling products, daily revenue trends.  
 
 ---
+## Getting Started for Developers 
+
+### **Pre-requisites**
+- **Python 3** – Download from [python.org](https://www.python.org/)
+- For local database setup: **Docker Desktop** installed and running
+
+---
+
+### **A.To run Local ETL pipeline  (Beginner-Friendly)**
+This mode saves data locally in CSV files. It is suitable for non-technical users and quick testing.  
+⚠️ Not recommended for scalability or larger datasets – use a database instead.
+
+1. **Download the project**
+   - Clone via Git:  
+     ```bash
+     git clone https://github.com/DE-X6-LM/ana-lattex-de-x6-generation.git
+     ```
+   - Or download as `.zip`, extract, and navigate into the directory.
+
+2. **Create and activate a virtual environment**  
+   ```bash
+   python -m venv venv
+
+- **Windows (CMD/PowerShell):**  
+  ```bash
+  .\venv\Scripts\activate
+
+- **MacOS/Linux:**
+  ```bash
+  source venv/bin/activate
+  ```
+Once active your command prompt will now show (venv) at the beginning.
+
+3.**Docker setup:**
+- Install & start Docker Desktop.
+- Run Docker Compose:
+  - In VS Code, click ▶️ on the docker-compose.yml file
+  - or run:
+      ```bash
+      docker-compose up -d
+      ```
+  This starts Postgres + Adminer containers.
+- Database credentials: 
+  - Stored in .env file.
+  - Access Adminer at http://localhost:8081
+   (use credentials from .env).
+
+
+4. **Run the application**
+   ```bash
+   python3 auto_etl.py
+   ```
+
+### B. To run AWS cloud ETL pipeline
+
+#### 0. Configure AWS CLI and log in via VS Code terminal
+
+- **Open VS Code terminal** in your project folder.
+
+- **Install AWS CLI** (if not already installed):  
+  - **macOS (using Homebrew):**
+  ```bash
+  brew install awscli
+  ```
+  -**Windows (via MSI installer):**
+  ```bash
+  https://aws.amazon.com/cli/
+   ```
+- **Configure AWS CLI with your credentials:**
+  ```bash
+  aws configure
+  ```
+   - Enter your AWS Access Key ID
+   - Enter your AWS Secret Access Key
+   - Set your default region (e.g., eu-north-1)
+   - Choose default output format (e.g., json)
+
+- **Verify configuration:**
+  ```bash
+  aws sts get-caller-identity
+  ```
+  You should see your AWS account ID and user ARN if configured correctly.
+
+- **(Optional) Use environment variables instead of aws configure:**
+  ```bash
+  export AWS_ACCESS_KEY_ID=<your-access-key>
+  export AWS_SECRET_ACCESS_KEY=<your-secret-key>
+  export AWS_DEFAULT_REGION=<your-region>
+  ```
+   On Windows PowerShell, use $env:AWS_ACCESS_KEY_ID = "<your-access-key>" etc.
+
+
+**1. Deploy the pipeline (if not already deployed):**
+If you have the deployment files included in the repo, you can deploy all AWS services using CloudFormation templates:
+
+ **Deploy S3 buckets:**
+  ```bash
+  aws cloudformation deploy --template-file deployment/s3_buckets.yaml --stack-name supercafe-s3
+  ```
+
+ **Deploy Lambda functions:**
+  ```bash
+  aws cloudformation deploy --template-file deployment/lambda_stack.yaml --stack-name supercafe-lambda
+  ```
+**2.Log in to AWS Management Console:**
+  -Go to [https://aws.amazon.com/console/](https://aws.amazon.com/console/) and log in with your credentials.
+
+**3.Check the S3 Buckets:**
+  - Navigate to the **S3** service.
+  - Open the raw bucket to see uploaded CSV files.
+  -  Open the processed bucket (if applicable) to see transformed files.
+    
+**4.Check the Lambda Function:**
+   - Navigate to the **Lambda** service.
+   - Open the ETL Lambda function.
+   - Review the **Code** and **Configuration**.
+   - You can check **Monitoring → Logs** to see if the Lambda ran successfully.
+     
+**5.Optional – Trigger the Pipeline:** 
+  - You can upload a new CSV file to the raw S3 bucket to trigger the Lambda ETL process.
+  -  Check the processed bucket and Lambda logs to confirm successful execution.
+
+  >Note: Make sure you have access to the AWS account where the pipeline is deployed.
+
+## Configuration and Secrets Management
+
+- **Local environment:** use a `.env` file (do not commit to version control).  
+- **AWS:** store credentials in **SSM Parameter Store** or **Secrets Manager**.
+
+## Monitoring & Analytics
+
+- **Metrics:** `files_processed`, `rows_parsed`, `rows_loaded`, `errors`.  
+- **Logs:** Local logs or **CloudWatch** (AWS).  
+- **Dashboards:** Grafana visualizations of KPIs.
+
+## Testing & Quality Checks
+
+- Unit tests for ETL extraction and transformation functions.  
+- CI should run tests before deployment.  
+- **Common issues:** missing columns, connection issues, malformed CSV rows.
+
+## Future Improvements
+
+- Real-time streaming ingestion (**Kinesis** / **Kafka**).  
+- Advanced BI: customer segmentation, forecasting.  
+- Data lake / Redshift / Snowflake migration.  
+
+## Team Contacts
+
+**Team Ana-LatteX:**  
+- **Developers:** Kimira, Michael, Rahidur, Prajakta  
+- **Product Owners:** Jessica, Cindy
 
 
 
 
+*-*-*-In-depth Project background-*-*-*
 
-
-
-
-# ana-lattex-de-x6-generation
-
-Project background: 
 Our Cafe order application was a success, the client now wants to facilitate their unprecedented growth and expansion to hundreds of outlets.
 The client wants to target new and returning customers to understand which of their products are best sellers.
 
@@ -211,49 +358,49 @@ New set up -
 * Data Analytics software will be used to create Business Intelligence analytics for the client.
 * Application monitoring software used to produce operational metrics (i.e. system errors, up-time, etc).
 
-how to run the app:
-locally -
+Benefits and uses of each type of each set up:
 
-How to run the Super Cafe app (file based) Prerequisites - Python 3 this can be downloaded from https://www.python.org/
+*-*-File Based-*-*
 
-Download the project: If using Git clone the repository by using the code below;
+To run Super cafe in its most basic form a file based version of the pipeline may be ran, this will allow for the pipeline, Extract, Load and transform functions to be saved locally, good for non-technical users and for testing file updates.  
+Due to isolation, Debugging will be safer as there is no chance of messing up production/cloud data and Developers can run ETL locally on sample data before deploying.
+uses - prototyping, PoC, schema debugging, unit tests, CI/CD pipelines.
+However this will not be great for scalability so for larger data sets databases are reccommened.
 
-git Clone (https://github.com/DE-X6-LM/ana-lattex-de-x6-generation.git)
 
-If downloaded as a .zip file, extract this and navigate to the ana-lattex-de-x6-generation directory.
+-*-* local (PostgresSQL) database*-*-
 
-It is recommended to create a virtual envirnoment to help manage project dependencies
+To run the ETL on a local (PostgresSQL) database, this will allow for larger datasets that are still locally stored, free to run as no ongoing cloud costs. 
+Low setup and cost - Free to run locally or on a small V, no ongoing cloud infrastructure costs and great for PoC, prototyping, and unit testing.
+Postgres is ANSI SQL compliant with tons of extensions, so Easy to experiment with JSON, window functions, or PostGIS locally.
+Good for devs iterating on schemas, transformations, or debugging ETL code.
+As with file based less chance of messing up production/cloud data and Developers can run ETL locally on sample data before deploying.
 
-To create a virtual envirnoment:
 
-python -m venv venv
+-*-*-Cloud based Database (Redshift)-*-*-
 
-Then activate this: Windows: .\venv\Scripts\activate or .\venv\Scripts\activate.ps1
-
-MacOS/Linux: source venv/bin/activate
-
-Once active your command prompt will now show (venv) at the beginning.
-
-local (PostgresSQL) database -
-
-pip install will not be needed for exteral libraries, however this would be useful for when using a database and scalability.
-
-Running the application:
-
-Ensure virtual envirnoment is active
-Navigate to root directory of Super Cafe app:
-cd ana-lattex-de-x6-generation
-
-Run main app file:
-main.py
-
-This will show the main menu and you can use the on screen prompt to navigate the menus and manage food items, orders and couriers.
+Massive scale as it handles terabytes to petabytes of data efficiently.
+Parallel processing + columnar storage optimized for analytics. Integration with AWS ecosystem such as  S3, Glue, Lambda, QuickSight, Grafana, etc.
+Reliable due to backups, snapshots, scaling, failover handled by AWS.
+Uses - production analytics warehouse with large datasets, multiple users, dashboards (Grafana, BI tools).
+High concurrency + collaboration - Multiple analysts, dashboards, and apps can query simultaneously.
+IAM + Secrets Manager integration for secure multi-user access.
+Performance optimizations -Distribution keys, sort keys, materialized views, and workload management.
+Auto-suspend (Serverless) saves cost when idle.
 
 Data persistence:
 All changes made in the apps menus will be automatically saved to the CSV files in the data directory. Dependant on the connection chosen, this is also handled by the local Postgres database and the AWS Redshift cloud database as it will allow for larger volumes of data to be saved without affecting the app.
 
 How to run any unit tests:
 
+Run unit tests with pytest -
+# macOS / Linux
+
+           python -m pytest -v -spython -m pytest -v -s
+
+# Windows PowerShell
+
+           py -m pytest -v -s
 
 
 Week 1 Sprint:
@@ -269,6 +416,4 @@ Week 4 Sprint:
 Scrum master Michael
 
 Week 5 Sprint 
-Scrum master TBC
-
-
+Scrum master Rahidur
