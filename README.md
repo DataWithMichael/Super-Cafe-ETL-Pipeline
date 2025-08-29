@@ -358,76 +358,49 @@ New set up -
 * Data Analytics software will be used to create Business Intelligence analytics for the client.
 * Application monitoring software used to produce operational metrics (i.e. system errors, up-time, etc).
 
-*-*-Getting started for Developers (or non-techinal users)-*-*
-
-Prerequisites - Python 3 this can be downloaded from https://www.python.org/
-
-To run Super cafe in its most basic form a file based version of the pipeline may be ran, this will allow for the pipeline, Extract, Load and transform functions to be saved locally, good for non-technical users and for testing file updates. However this will not be great for scalability so for larger data sets databases are reccommened.  
+Benefits and uses of each type of each set up:
 
 *-*-File Based-*-*
 
-1.Download the project: If using Git clone the repository by using the code below;
-git Clone (https://github.com/DE-X6-LM/ana-lattex-de-x6-generation.git)
-
-2.If downloaded as a .zip file, extract this and navigate to the ana-lattex-de-x6-generation directory.
-
-3.It is recommended to create a virtual envirnoment to help manage project dependencies.
-
----To create a virtual envirnoment:
-
-'python -m venv venv'
-
-Then activate this: Windows: '.\venv\Scripts\activate' or '.\venv\Scripts\activate.ps1'
-
-MacOS/Linux: 'source venv/bin/activate'
-
-Once active your command prompt will now show (venv) at the beginning.
-
-4. a.Ensure virtual envirnoment is active:
-   
-   b. Navigate to root directory of Super Cafe app:
-
-                  cd ana-lattex-de-x6-generation
-
-   c.Run main app file:
-   
-                 python main.py
-
--*-*To run the ETL on a local (PostgresSQL) database, this will allow for larger datasets that are still locally stored*-*-
-
-Set up using Docker:
--- Prerequisites - Docker installed on your machine. 
-
-1.Make sure Docker Desktop is running.
-2. Go to Database subdirectory
-3. Run docker-compose file by either running in the file (push the play button ▶️)
-   or
- use the command 'docker-compose up -d' in your terminal to run the script, this will start docker and start Postgres and Adminer containers to run your entire system.
-
-Database credentials (local) are in the env. file, and optionally you can use these in the web browser to access Adminer (http://loaclhost:8081) to inspect the database and tables of data. 
-
--*-*-Set up using Cloud based Database (Redshift)-*-*-
+To run Super cafe in its most basic form a file based version of the pipeline may be ran, this will allow for the pipeline, Extract, Load and transform functions to be saved locally, good for non-technical users and for testing file updates.  
+Due to isolation, Debugging will be safer as there is no chance of messing up production/cloud data and Developers can run ETL locally on sample data before deploying.
+uses - prototyping, PoC, schema debugging, unit tests, CI/CD pipelines.
+However this will not be great for scalability so for larger data sets databases are reccommened.
 
 
+-*-* local (PostgresSQL) database*-*-
 
-pip install will not be needed for exteral libraries, however this would be useful for when using a database and scalability.
+To run the ETL on a local (PostgresSQL) database, this will allow for larger datasets that are still locally stored, free to run as no ongoing cloud costs. 
+Low setup and cost - Free to run locally or on a small V, no ongoing cloud infrastructure costs and great for PoC, prototyping, and unit testing.
+Postgres is ANSI SQL compliant with tons of extensions, so Easy to experiment with JSON, window functions, or PostGIS locally.
+Good for devs iterating on schemas, transformations, or debugging ETL code.
+As with file based less chance of messing up production/cloud data and Developers can run ETL locally on sample data before deploying.
 
-Running the application:
 
-Ensure virtual envirnoment is active
-Navigate to root directory of Super Cafe app:
-cd ana-lattex-de-x6-generation
+-*-*-Cloud based Database (Redshift)-*-*-
 
-Run main app file:
-main.py
-
-This will show the main menu and you can use the on screen prompt to navigate the menus and manage food items, orders and couriers.
+Massive scale as it handles terabytes to petabytes of data efficiently.
+Parallel processing + columnar storage optimized for analytics. Integration with AWS ecosystem such as  S3, Glue, Lambda, QuickSight, Grafana, etc.
+Reliable due to backups, snapshots, scaling, failover handled by AWS.
+Uses - production analytics warehouse with large datasets, multiple users, dashboards (Grafana, BI tools).
+High concurrency + collaboration - Multiple analysts, dashboards, and apps can query simultaneously.
+IAM + Secrets Manager integration for secure multi-user access.
+Performance optimizations -Distribution keys, sort keys, materialized views, and workload management.
+Auto-suspend (Serverless) saves cost when idle.
 
 Data persistence:
 All changes made in the apps menus will be automatically saved to the CSV files in the data directory. Dependant on the connection chosen, this is also handled by the local Postgres database and the AWS Redshift cloud database as it will allow for larger volumes of data to be saved without affecting the app.
 
 How to run any unit tests:
 
+Run unit tests with pytest -
+# macOS / Linux
+
+           python -m pytest -v -spython -m pytest -v -s
+
+# Windows PowerShell
+
+           py -m pytest -v -s
 
 
 Week 1 Sprint:
