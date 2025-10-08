@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Ana-lattex_Logo.png" alt="Ana-LatteX Logo" width="400" height="400"/>
+  <img src="Ana-lattex Logo.png" alt="Ana-LatteX Logo" width="400" height="400"/>
 </p>
 
 # Super Café ETL Pipeline
