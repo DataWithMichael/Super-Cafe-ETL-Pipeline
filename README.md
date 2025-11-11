@@ -5,12 +5,12 @@
 # Super Café ETL Pipeline
 
 **This repository is for the Super Café Project by Ana-LatteX**  
-*Ana-LatteX — Automated ETL & BI*
+*Michael Castillo-Garcia — Automated ETL & BI*
 
 ---
 
 ## Summary
-Fully automated ETL pipeline (local & AWS): ingest daily branch CSVs, clean and normalize transaction and order data, load into PostgreSQL (local) or Redshift (AWS). Visualize trends and insights with Grafana dashboards for branch and product performance.
+Fully automated ETL pipeline (local & AWS): ingest daily branch CSVs, clean and normalise transaction and order data, load into PostgreSQL (local) or Redshift (AWS). Visualise trends and insights with Grafana dashboards for branch and product performance.
 
 ---
 
@@ -26,15 +26,14 @@ Fully automated ETL pipeline (local & AWS): ingest daily branch CSVs, clean and 
 9. [Monitoring & Analytics](#monitoring--analytics)  
 10. [Testing & Quality Checks](#testing--quality-checks)  
 11. [Future Improvements](#future-improvements)  
-12. [Team Contacts](#team-contacts)  
 
 ---
 
 ## Overview of the Project
 This ETL pipeline automates the ingestion, transformation, and storage of daily transaction data from multiple café branches. Key benefits:
 
-- Centralized storage of branch transactions  
-- Standardized data format for analytics  
+- Centralised storage of branch transactions  
+- Standardised data format for analytics  
 - Real-time business insights via Grafana  
 - Scalable architecture supporting AWS deployment and local testing  
 
@@ -137,7 +136,7 @@ Processes daily branch CSVs on a local machine and loads data into PostgreSQL.
 3. **Data Transformation:**  
    - Use `etl.transform_row()` to split orders and items.  
    - Generate UUIDs for branches, orders, and products.  
-   - Normalize branch and product fields.  
+   - Normalise branch and product fields.  
    - Assign default `quantity = 1` if missing.  
 
 4. **Database Preparation:**  
@@ -151,7 +150,7 @@ Processes daily branch CSVs on a local machine and loads data into PostgreSQL.
    - Insert order items (`order_items`) linked to orders and products.  
 
 6. **Visualization:**  
-   - Grafana dashboards visualize local database insights: sales per branch, top-selling products, daily revenue trends.  
+   - Grafana dashboards visualise local database insights: sales per branch, top-selling products, and daily revenue trends.  
 
 ---
 
@@ -165,7 +164,7 @@ Processes daily branch CSVs in the cloud and loads data into S3 and Redshift for
    - Lambda extracts CSV data and transforms it using the same rules as local ETL:  
      - Split orders and items  
      - Generate UUIDs  
-     - Normalize branch and product data  
+     - Normalise branch and product data  
      - Assign default `quantity = 1`  
 
 3. **Data Loading:**  
@@ -177,7 +176,7 @@ Processes daily branch CSVs in the cloud and loads data into S3 and Redshift for
    - **CloudWatch** logs Lambda executions for monitoring and auditing.  
 
 5. **Visualization:**  
-   - Grafana dashboards show real-time insights: sales per branch, top-selling products, daily revenue trends.  
+   - Grafana dashboards show real-time insights: sales per branch, top-selling products, and daily revenue trends.  
 
 ---
 ## Getting Started for Developers 
@@ -211,7 +210,7 @@ This mode saves data locally in CSV files. It is suitable for non-technical user
   ```bash
   source venv/bin/activate
   ```
-Once active your command prompt will now show (venv) at the beginning.
+Once active, your command prompt will now show (venv) at the beginning.
 
 3.**Docker setup:**
 - Install & start Docker Desktop.
@@ -313,7 +312,7 @@ If you have the deployment files included in the repo, you can deploy all AWS se
 
 - **Metrics:** `files_processed`, `rows_parsed`, `rows_loaded`, `errors`.  
 - **Logs:** Local logs or **CloudWatch** (AWS).  
-- **Dashboards:** Grafana visualizations of KPIs.
+- **Dashboards:** Grafana visualisations of KPIs.
 
 ## Testing & Quality Checks
 
@@ -338,58 +337,58 @@ If you have the deployment files included in the repo, you can deploy all AWS se
 
 *-*-*-In-depth Project background-*-*-*
 
-Our Cafe order application was a success, the client now wants to facilitate their unprecedented growth and expansion to hundreds of outlets.
+Our Cafe order application was a success; the client now wants to facilitate their unprecedented growth and expansion to hundreds of outlets.
 The client wants to target new and returning customers to understand which of their products are best sellers.
 
 Client requirements:
-Current set up - 
-*Each branch creates a CSV file of transactions daily at 8pm that are uploaded to software in back-office computers.
-*To pull data for reporting, they have to manually collect the data from each location to collate, which is time consuming and it is difficult to colllect meaningful data for the company. 
-*They would like a platform that will upload all the data to a centralised online location to allow for easier data manipulation and will help them identify trends to maxise revenue streams.
+Current set-up - 
+*Each branch creates a CSV file of transactions daily at 8pm that are uploaded to the software in the back-office computers.
+*To pull data for reporting, they have to manually collect the data from each location to collate, which is time-consuming, and it is difficult to collect meaningful data for the company. 
+*They would like a platform that will upload all the data to a centralised online location to allow for easier data manipulation and will help them identify trends to maximise revenue streams.
 
 Consult results:
-To resolve this data issue we will build a fully scalable ETL pipeline to handle large volumes of tranactional information.
-This pipeline will collect all the transaction data generated by each individual cafe, and place it into a PostSQL database.
+To resolve this data issue, we will build a fully scalable ETL pipeline to handle large volumes of transactional information.
+This pipeline will collect all the transaction data generated by each individual cafe and place it into a PostgreSQL database.
 This will allow for easy access to relevant data to process, store and analyse.
-New set up - 
-* Each night a CSV for each branch will be uploaded to the cloud.
+New set-up - 
+* Each night, a CSV for each branch will be uploaded to the cloud.
 * The pipeline will read each file and Extract, Transform and Load the data.
 * Data will be stored in a data warehouse.
 * Data Analytics software will be used to create Business Intelligence analytics for the client.
 * Application monitoring software used to produce operational metrics (i.e. system errors, up-time, etc).
 
-Benefits and uses of each type of each set up:
+Benefits and uses of each type of set-up:
 
 *-*-File Based-*-*
 
-To run Super cafe in its most basic form a file based version of the pipeline may be ran, this will allow for the pipeline, Extract, Load and transform functions to be saved locally, good for non-technical users and for testing file updates.  
-Due to isolation, Debugging will be safer as there is no chance of messing up production/cloud data and Developers can run ETL locally on sample data before deploying.
+To run Super cafe in its most basic form, a file-based version of the pipeline may be run. This will allow for the pipeline, Extract, Load and transform functions to be saved locally, good for non-technical users and for testing file updates.  
+Due to isolation, Debugging will be safer as there is no chance of messing up production/cloud data, and Developers can run ETL locally on sample data before deploying.
 uses - prototyping, PoC, schema debugging, unit tests, CI/CD pipelines.
-However this will not be great for scalability so for larger data sets databases are reccommened.
+However, this will not be great for scalability, so for larger data sets, databases are recommended.
 
 
 -*-* local (PostgresSQL) database*-*-
 
-To run the ETL on a local (PostgresSQL) database, this will allow for larger datasets that are still locally stored, free to run as no ongoing cloud costs. 
+To run the ETL on a local (PostgreSQL) database, this will allow for larger datasets that are still locally stored, free to run as no ongoing cloud costs. 
 Low setup and cost - Free to run locally or on a small V, no ongoing cloud infrastructure costs and great for PoC, prototyping, and unit testing.
 Postgres is ANSI SQL compliant with tons of extensions, so Easy to experiment with JSON, window functions, or PostGIS locally.
 Good for devs iterating on schemas, transformations, or debugging ETL code.
-As with file based less chance of messing up production/cloud data and Developers can run ETL locally on sample data before deploying.
+As with file based less chance of messing up production/cloud data, and Developers can run ETL locally on sample data before deploying.
 
 
 -*-*-Cloud based Database (Redshift)-*-*-
 
-Massive scale as it handles terabytes to petabytes of data efficiently.
-Parallel processing + columnar storage optimized for analytics. Integration with AWS ecosystem such as  S3, Glue, Lambda, QuickSight, Grafana, etc.
-Reliable due to backups, snapshots, scaling, failover handled by AWS.
+Massive scale, as it handles terabytes to petabytes of data efficiently.
+Parallel processing + columnar storage optimised for analytics. Integration with AWS ecosystem, such as  S3, Glue, Lambda, QuickSight, Grafana, etc.
+Reliable due to backups, snapshots, scaling, and failover handled by AWS.
 Uses - production analytics warehouse with large datasets, multiple users, dashboards (Grafana, BI tools).
 High concurrency + collaboration - Multiple analysts, dashboards, and apps can query simultaneously.
 IAM + Secrets Manager integration for secure multi-user access.
-Performance optimizations -Distribution keys, sort keys, materialized views, and workload management.
+Performance optimisations -Distribution keys, sort keys, materialised views, and workload management.
 Auto-suspend (Serverless) saves cost when idle.
 
 Data persistence:
-All changes made in the apps menus will be automatically saved to the CSV files in the data directory. Dependant on the connection chosen, this is also handled by the local Postgres database and the AWS Redshift cloud database as it will allow for larger volumes of data to be saved without affecting the app.
+All changes made in the app's menus will be automatically saved to the CSV files in the data directory. Depending on the connection chosen, this is also handled by the local Postgres database and the AWS Redshift cloud database, as it will allow for larger volumes of data to be saved without affecting the app.
 
 How to run any unit tests:
 
@@ -401,19 +400,3 @@ Run unit tests with pytest -
 # Windows PowerShell
 
            py -m pytest -v -s
-
-
-Week 1 Sprint:
-Scrum master Prajakta 
-
-Week 2 Sprint:
-Scrum master Rahidur
-
-Week 3 Sprint:
-Scrum master Kimira
-
-Week 4 Sprint:
-Scrum master Michael
-
-Week 5 Sprint 
-Scrum master Rahidur
